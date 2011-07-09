@@ -1,0 +1,11 @@
+<% content_for :head do %>
+  <%= javascript_include_tag '/javascripts/lobby.js' %>
+<% end %>
+
+playername: <input type="text" name="pname" id="set_name_input" value="<%= session[:name] %>"></input>
+<input type="button" id="set_name_button" value="Change Name"></input>
+<div id="name_response"></div></br>
+<input type="button" id="join_game_button" value="Join Game"></input>
+<div id="game_response"></div></br>
+
+

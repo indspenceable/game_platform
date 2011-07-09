@@ -1,0 +1,8 @@
+<% content_for :head do %>
+  <%= javascript_include_tag '/javascripts/game.js' %>
+<% end %>
+------------------------</br>
+<canvas width="320" height="320" id="canvas"></canvas>
+------------------------</br>
+You are successfully viewing a game!
+<%= @game.inspect %>
