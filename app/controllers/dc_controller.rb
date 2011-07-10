@@ -1,7 +1,4 @@
 class DcController < ApplicationController
-  def lobby
-  end
-
   #change this players name - via POST
   def name
     return render :json => false.to_json unless Player.valid_name?(params['name'])
@@ -24,8 +21,11 @@ class DcController < ApplicationController
   
   def new_game
     return render :json => false.to_json  unless (session[:name] && (p = Player.find_by_name(session[:name])))
-    p.game_id = Game.generate_new_game([session[:name],'enemy'])
+    p.game_id = Game.generate_new_game([session[:name],'enemy9'])
     p.save
+    p2 = Player.find_by_name('enemy9')
+    p2.game_id = p.game_id
+    p2.save
     return render :json => true.to_json
   end
 
@@ -34,6 +34,16 @@ class DcController < ApplicationController
     @game = YAML.load(Game.find_newest_state(Player.find_by_name(session[:name]).game_id).state)
     return redirect_to '/' unless @game
     #OK - we have a game
+  end
+
+  def poll_lobby
+    5.times do 
+      puts "*"
+    end
+    p = Player.find_by_name(session[:name])
+    puts "Game id is #{p.game_id}"
+    return render :json => {'in_game' => true} if p.game_id
+    render :json => {}
   end
 
   #get any new chats
@@ -93,7 +103,7 @@ class DcController < ApplicationController
       ctn += 1
     end
     #games = Game.find(:first,:conditions => {:game_id => game_id, :move_id => turn_number+1})
-    
+
     5.times do
       puts ""
     end

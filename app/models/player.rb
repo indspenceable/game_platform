@@ -6,7 +6,6 @@ class Player < ActiveRecord::Base
     !!(n=~/[a-z]{3,10}/)
   end
   def self.find_by_name n
-    puts all.map { |e| e.inspect }
     first(:conditions => {:name => n})
   end
 end

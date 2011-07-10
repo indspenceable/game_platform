@@ -64,6 +64,7 @@ function canvasClickEvent(e) {
     var y = loc[1]
     if (board[x][y] == null) {
       $.post("/submit",{'type':'play','loc':loc}, function(response) {
+        console.log("submitted order, updating.");
         update();
       })
     } else {
@@ -77,10 +78,10 @@ function update() {
   $.get("/transitions",{'current_turn':current_turn},function(response) {
     console.log("We got: ", response);
     if (response.length > 0) {
-      alert("we have " + response.length + " transitions to parse.");
       for (var i = 0; i < response.length; i++ ) {
         processTransition(response[i]);
       }
+      drawBoard();
     }
   });
   drawBoard();
@@ -102,7 +103,7 @@ function load_state_json(data) {
   current_player = data['current_player'];
   current_turn = data['current_turn'];
   board = data['board'];
-  alert("We loaded the state.");
+  console.log("loaded a new state.");
   console.log(data);
 }
 
