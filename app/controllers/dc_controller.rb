@@ -4,7 +4,6 @@ class DcController < ApplicationController
 
   #change this players name - via POST
   def name
-    puts "HELLO WORLD."
     return render :json => false.to_json unless Player.valid_name?(params['name'])
     new_name = params['name']
     if !!Player.find_by_name(new_name)
@@ -25,19 +24,15 @@ class DcController < ApplicationController
   
   def new_game
     return render :json => false.to_json  unless (session[:name] && (p = Player.find_by_name(session[:name])))
-    puts p
-    p.game_id = Game.generate_new_game
+    p.game_id = Game.generate_new_game([session[:name],'enemy'])
     p.save
     return render :json => true.to_json
   end
 
   def game
     return redirect_to '/' unless (session[:name] && Player.find_by_name(session[:name])) 
-    @game = Game.find_newest_state(Player.find_by_name(session[:name]).game_id)
+    @game = YAML.load(Game.find_newest_state(Player.find_by_name(session[:name]).game_id).state)
     return redirect_to '/' unless @game
-    puts "Game is #{@game.inspect}"
-    @game = @game.json_for session[:name]
-    puts "game is now <><><><><>#{@game}<><>>>>><><><><<>"
     #OK - we have a game
   end
 
@@ -55,17 +50,53 @@ class DcController < ApplicationController
 
   # get the state of a game right now
   def state
+    @game = Game.find_newest_state(Player.find_by_name(session[:name]).game_id)
+    state = YAML.load(@game.state)
+    render :json => (state.state_json(session[:name]))
   end
 
-  #submit starting units
-  def submit_units
+  #submit some data.
+  def submit
+    @game = Game.find_newest_state(Player.find_by_name(session[:name]).game_id)
+    state = YAML.load(@game.state)
+    res = state.submit session[:name], params
+    if res
+      t = Transition.new({:game_id => @game.game_id, :turn_id => (@game.move_id), :data => res.to_json})
+      g = Game.new({:game_id => @game.game_id, :move_id => (@game.move_id + 1), :state => state})
+      g.save
+      t.save
+    else
+    end
+    render :text => "Hello, world."
   end
 
-  #submit orders for a turn
-  def submit_orders
-  end
 
+  #TODO - Change Game.move_id -> Game.turn_id
   #get any changes from other people's turns
-  def transtions
+  def transitions
+    5.times do
+      puts ""
+    end
+    game_id = Player.find_by_name(session[:name]).game_id
+    puts "Our game id is #{game_id}"
+    newest_turn = Game.find_newest_state(game_id);
+    puts "Newest turn is #{newest_turn} with move number #{newest_turn.move_id}"
+    ctn = params['current_turn'].to_i
+    puts "They asked for #{ctn}"
+    return render({:json => []}) if ctn == newest_turn.move_id
+
+    transitions = []
+    while ctn < newest_turn.move_id
+      puts "Adding a transition"
+      transition = Transition.find(:first, :conditions => {:game_id => game_id, :turn_id => ctn})
+      transitions << JSON.parse(transition.data)
+      ctn += 1
+    end
+    #games = Game.find(:first,:conditions => {:game_id => game_id, :move_id => turn_number+1})
+    
+    5.times do
+      puts ""
+    end
+    render :json => transitions
   end
 end

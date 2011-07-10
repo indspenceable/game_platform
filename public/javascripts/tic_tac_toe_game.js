@@ -1,15 +1,22 @@
-var SQUARE_WIDTH = 32;
-var SQUARE_HEIGHT = 32;
+var SQUARE_WIDTH = 100;
+var SQUARE_HEIGHT = 100;
 
+var current_player;
 var current_turn;
 var player_name;
+var board;
+
+function myTurn() {
+  console.log(player_name,current_player);
+  return (player_name == current_player);
+}
 
 function drawBoard() {
   var context = document.getElementById("canvas").getContext("2d");
-  for (var i = 0; i < map.length; i++ ) {
-    for (var j = 0; j < map[i].length; j++ ) {
-      if (map[i][j] != null) {
-        var p = map[i][j]
+  for (var i = 0; i < board.length; i++ ) {
+    for (var j = 0; j < board[i].length; j++ ) {
+      if (board[i][j] != null) {
+        var p = board[i][j]
         if (p == player_name) {
           context.fillStyle = "#F00"
         } else {
@@ -17,6 +24,8 @@ function drawBoard() {
         }
         context.fillRect(i * SQUARE_WIDTH, j*SQUARE_HEIGHT, SQUARE_WIDTH, SQUARE_HEIGHT);
       }
+      context.fillStyle = "#000"
+      context.fillRect(i * SQUARE_WIDTH, j*SQUARE_HEIGHT, 10, 10);
     }
   }
 }
@@ -54,7 +63,9 @@ function canvasClickEvent(e) {
     var x = loc[0]
     var y = loc[1]
     if (board[x][y] == null) {
-      $.post("/submit",{'type':'play','loc':loc}, function(response) {})
+      $.post("/submit",{'type':'play','loc':loc}, function(response) {
+        update();
+      })
     } else {
       alert("You can't play a square that already exists.");
     }
@@ -62,35 +73,52 @@ function canvasClickEvent(e) {
 }
 
 function update() {
-  if (!myTurn()) {
-    $.get("/transitions",current_state, function(response) {
-      if (response.length > 0) {
-        for (var i = 0; i < response.length; i++ ) {
-          processTransition(response[i]);
-        }
+  console.log("Getting Transitions.", current_turn);
+  $.get("/transitions",{'current_turn':current_turn},function(response) {
+    console.log("We got: ", response);
+    if (response.length > 0) {
+      alert("we have " + response.length + " transitions to parse.");
+      for (var i = 0; i < response.length; i++ ) {
+        processTransition(response[i]);
       }
-    });
-  }
+    }
+  });
   drawBoard();
 }
 
 function processTransition(t) {
   if (t.type == 'play_square') {
-    map[t.x][t.y] = t.player
+    board[t.x][t.y] = t.player
+    current_player = t.next_player
     current_turn = t.next_turn
   } else if (t.type == 'game_over') {
     alert("The game is over.");
   }
 }
 
+function load_state_json(data) {
+  console.log("loading state data.",data);
+  player_name = data['name'];
+  current_player = data['current_player'];
+  current_turn = data['current_turn'];
+  board = data['board'];
+  alert("We loaded the state.");
+  console.log(data);
+}
+
 $(document).ajaxSend(function(e, xhr, options) {
   var token = $("meta[name='csrf-token']").attr("content");
   xhr.setRequestHeader("X-CSRF-Token", token);
 });
+
 $(document).ready(function() {
-  $('#canvas').click(function(e) {
-    canvasClickEvent(e);
+  $.get('/state',function(data) {
+    load_state_json(data);
+    $('#canvas').click(function(e) {
+      canvasClickEvent(e);
+    });
+    setInterval("update();",3000);
+    update();
   });
-  update();
 });
 
