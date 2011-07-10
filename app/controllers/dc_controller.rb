@@ -1,5 +1,10 @@
 class DcController < ApplicationController
+
+  before_filter :require_login
+
+  #get any new chats
   def lobby
+    @player_id = session[:player_id]
   end
 
   #change this players name - via POST
@@ -39,10 +44,6 @@ class DcController < ApplicationController
     @game = @game.json_for session[:name]
     puts "game is now <><><><><>#{@game}<><>>>>><><><><<>"
     #OK - we have a game
-  end
-
-  #get any new chats
-  def lobby
   end
 
   #challenge a player, or cancel a challenge

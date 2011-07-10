@@ -1,5 +1,7 @@
 Dc::Application.routes.draw do
   match '/' => 'dc#lobby'
+  match '/login' => 'player#login'
+  match '/register' => 'player#create_player'
 
   ['name','challenge','accept','submit_units','submit_order'].each do |m|
     match "/#{m}" => "dc##{m}", :via => :post
