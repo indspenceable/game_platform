@@ -1,5 +1,13 @@
 require 'tic_tac_toe.rb'
 class DcController < ApplicationController
+
+  before_filter :require_login
+
+  #get any new chats
+  def lobby
+    @player_id = session[:player_id]
+  end
+
   #change this players name - via POST
   def name
     return render :json => false.to_json unless Player.valid_name?(params['name'])
@@ -37,14 +45,11 @@ class DcController < ApplicationController
     #OK - we have a game
   end
 
+
   def poll_lobby
     p = Player.find_by_name(session[:name])
     return render :json => {'in_game' => true} if p.game
     render :json => {}
-  end
-
-  #get any new chats
-  def lobby
   end
 
   #challenge a player, or cancel a challenge
