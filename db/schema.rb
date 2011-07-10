@@ -10,7 +10,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(:version => 20110709230451) do
+=======
+ActiveRecord::Schema.define(:version => 20110710180745) do
+>>>>>>> 95e8eec7ec66a6cd09401279bf4e167eb5f243ea
 
   create_table "games", :force => true do |t|
     t.text     "state"
@@ -29,6 +33,14 @@ ActiveRecord::Schema.define(:version => 20110709230451) do
     t.string   "hashed_password"
     t.string   "salt"
     t.string   "email"
+  end
+
+  create_table "transitions", :force => true do |t|
+    t.integer  "game_id"
+    t.integer  "turn_id"
+    t.text     "data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end

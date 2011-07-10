@@ -8,7 +8,7 @@ var selected_action = null;
 var selected_unit = null;
 
 //EXAMPLE map
-var map = []//[[null,null,null,null,null,null],[null,null,{'movespeed':3,'loc':[1,2],'unit_id':1}],[null,null,null]];
+var map = [] //[[null,null,null,null,null,null],[null,null,{'movespeed':3,'loc':[1,2],'unit_id':1}],[null,null,null]];
 for (var z = 0; z < 10; z++ ) {
   var new_array = []
   for (var y = 0; y < 10; y++ ) {
@@ -100,12 +100,10 @@ function findPath(start,end) {
   while (open_list.length > 0) {
     current = open_list.shift()
     current_loc = current[current.length-1]
-    console.log("Current_loc is ",current_loc);
     closed_list.push(current_loc);
 
     // if this is the destination, then return the path.
     if (current_loc.compareArrays(end)) {
-      alert(current);
       return current;
     }
 
@@ -119,11 +117,10 @@ function findPath(start,end) {
           if ((( a==0 ) || (b==0)) && (a != b)) {
             var new_loc = [current_loc[0]+a, current_loc[1]+b];
             // If we haven't already seen this one
-            if (locationIncluded(new_loc,closed_list) == -1 ||
-            locationIncluded(new_loc,open_list)) {
+            if (locationIncluded(new_loc,closed_list) == -1 &&
+            locationIncluded(new_loc,open_list) == -1) {
               var adder = current.slice(0)
               adder.push(new_loc);
-              console.log("adding to open_list",new_loc);
               open_list.push(adder);
             }
           }
