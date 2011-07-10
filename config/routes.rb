@@ -1,7 +1,7 @@
 Dc::Application.routes.draw do
   match '/' => 'dc#lobby'
 
-  ['name','challenge','accept','submit_units','submit_order'].each do |m|
+  ['name','challenge','accept','submit'].each do |m|
     match "/#{m}" => "dc##{m}", :via => :post
   end
   ['poll_lobby','game','state','transitions'].each do |m|
