@@ -6,7 +6,7 @@ class TicTacToe
         nil
       end
     end
-    @current_turn = 0
+    @current_turn = 1
     @players = players
   end
   def current_player

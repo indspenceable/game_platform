@@ -1,3 +1,4 @@
+require 'tic_tac_toe.rb'
 class DcController < ApplicationController
   #change this players name - via POST
   def name
@@ -21,28 +22,24 @@ class DcController < ApplicationController
   
   def new_game
     return render :json => false.to_json  unless (session[:name] && (p = Player.find_by_name(session[:name])))
-    p.game_id = Game.generate_new_game([session[:name],'enemy9'])
-    p.save
-    p2 = Player.find_by_name('enemy9')
-    p2.game_id = p.game_id
-    p2.save
+    game = Game.create(:game_type => 'tic_tac_toe', :players => [Player.find_by_name(session[:name])])
+    #TODO - this needs to be able to make different types of games.
+    st = game.states.create(:data => YAML.dump(TicTacToe.new([session[:name]])), :turn_id => 1);
+    game.save
     return render :json => true.to_json
   end
 
   def game
     return redirect_to '/' unless (session[:name] && Player.find_by_name(session[:name])) 
-    @game = YAML.load(Game.find_newest_state(Player.find_by_name(session[:name]).game_id).state)
-    return redirect_to '/' unless @game
+    #@game = YAML.load(Game.find_newest_state(Player.find_by_name(session[:name]).game_id).state)
+    player = Player.find_by_name(session[:name])
+    return redirect_to '/' unless player.game
     #OK - we have a game
   end
 
   def poll_lobby
-    5.times do 
-      puts "*"
-    end
     p = Player.find_by_name(session[:name])
-    puts "Game id is #{p.game_id}"
-    return render :json => {'in_game' => true} if p.game_id
+    return render :json => {'in_game' => true} if p.game
     render :json => {}
   end
 
@@ -60,52 +57,46 @@ class DcController < ApplicationController
 
   # get the state of a game right now
   def state
-    @game = Game.find_newest_state(Player.find_by_name(session[:name]).game_id)
-    state = YAML.load(@game.state)
-    render :json => (state.state_json(session[:name]))
+    player = Player.find_by_name(session[:name])
+    state = YAML.load(player.game.current_state.data)
+    puts "State is a #{state.class} #{state.inspect}"
+    render :json => (state.state_json(player.name))
   end
 
   #submit some data.
   def submit
-    @game = Game.find_newest_state(Player.find_by_name(session[:name]).game_id)
-    state = YAML.load(@game.state)
-    res = state.submit session[:name], params
+    #@game = Game.find_newest_state(Player.find_by_name(session[:name]).game_id)
+    player = Player.find_by_name(session[:name])
+    game = player.game
+    state = game.current_state
+    loaded_state = YAML.load(state.data)
+    res = loaded_state.submit player.name, params
     if res
-      t = Transition.new({:game_id => @game.game_id, :turn_id => (@game.move_id), :data => res.to_json})
-      g = Game.new({:game_id => @game.game_id, :move_id => (@game.move_id + 1), :state => state})
-      g.save
-      t.save
-    else
+      #t = Transition.new({:game_id => @game.game_id, :turn_id => (@game.move_id), :data => res.to_json})
+      game.transitions.create(:turn_id => state.turn_id, :data => res.to_json)
+      game.states.create(:turn_id => state.turn_id + 1, :data => loaded_state)
     end
     render :text => "Hello, world."
   end
 
 
-  #TODO - Change Game.move_id -> Game.turn_id
   #get any changes from other people's turns
   def transitions
-    5.times do
-      puts ""
-    end
-    game_id = Player.find_by_name(session[:name]).game_id
-    puts "Our game id is #{game_id}"
-    newest_turn = Game.find_newest_state(game_id);
-    puts "Newest turn is #{newest_turn} with move number #{newest_turn.move_id}"
+    #TODO - this doesn't work.
+    #game_id = Player.find_by_name(session[:name]).game_id
+    player = Player.find_by_name(session[:name])
+    game = player.game
+    #newest_turn = Game.find_newest_state(game_id);
+    current_state = game.current_state
     ctn = params['current_turn'].to_i
-    puts "They asked for #{ctn}"
-    return render({:json => []}) if ctn == newest_turn.move_id
+    return render({:json => []}) if ctn == current_state.turn_id
 
     transitions = []
-    while ctn < newest_turn.move_id
-      puts "Adding a transition"
-      transition = Transition.find(:first, :conditions => {:game_id => game_id, :turn_id => ctn})
-      transitions << JSON.parse(transition.data)
+    while ctn < current_state.turn_id
+      #transition = Transition.find(:first, :conditions => {:game_id => game_id, :turn_id => ctn})
+      td = game.transitions.find(:first, :conditions => {:turn_id => ctn}).data
+      transitions << JSON.parse(td)
       ctn += 1
-    end
-    #games = Game.find(:first,:conditions => {:game_id => game_id, :move_id => turn_number+1})
-
-    5.times do
-      puts ""
     end
     render :json => transitions
   end

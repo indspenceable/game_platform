@@ -3,8 +3,6 @@ class CreatePlayers < ActiveRecord::Migration
     create_table :players do |t|
       t.string :name
       t.integer :game_id
-      t.string :current_challenge
-
       t.timestamps
     end
   end
