@@ -2,11 +2,9 @@
   <%= javascript_include_tag '/javascripts/lobby.js' %>
 <% end %>
 
-<%= "Player ID: #{@player_id}" %>
+<%= "Player ID: #{@player.id}" %>
 
-playername: <input type="text" name="pname" id="set_name_input" value="<%= session[:name] %>"></input>
-<input type="button" id="set_name_button" value="Change Name"></input>
-<div id="name_response"></div></br>
+challenge <input type="text" name="challenge" id="challenge"></input>
 <input type="button" id="join_game_button" value="Join Game"></input>
 <div id="game_response"></div></br>
 

@@ -9,6 +9,8 @@ class ApplicationController < ActionController::Base
     unless logged_in?
       flash[:error] = "log in to access this page"
       redirect_to :controller => :player, :action => :login
+    else
+      @player = Player.find(session[:player_id])
     end
   end
 

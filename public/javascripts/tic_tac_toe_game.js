@@ -1,5 +1,4 @@
-var SQUARE_WIDTH = 100;
-var SQUARE_HEIGHT = 100;
+var SQUARE_WIDTH = 100; var SQUARE_HEIGHT = 100;
 
 var current_player;
 var current_turn;
@@ -76,10 +75,11 @@ function canvasClickEvent(e) {
 function update() {
   console.log("Getting Transitions.", current_turn);
   $.get("/transitions",{'current_turn':current_turn},function(response) {
-    console.log("We got: ", response);
-    if (response.length > 0) {
-      for (var i = 0; i < response.length; i++ ) {
-        processTransition(response[i]);
+    if (response['game_over'] == true) {
+      window.location = '/';
+    } else if (response.transitions.length > 0) {
+      for (var i = 0; i < response.transitions.length; i++ ) {
+        processTransition(response.transitions[i]);
       }
       drawBoard();
     }
@@ -113,6 +113,9 @@ $(document).ajaxSend(function(e, xhr, options) {
 });
 
 $(document).ready(function() {
+  $("#quit").click(function(e) {
+    $.post("/quit")
+  })
   $.get('/state',function(data) {
     load_state_json(data);
     $('#canvas').click(function(e) {
