@@ -1,5 +1,5 @@
 require 'tic_tac_toe.rb'
-class DcController < ApplicationController
+class GameController < ApplicationController
 
   before_filter :require_login
 

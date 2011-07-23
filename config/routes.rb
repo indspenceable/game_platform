@@ -1,4 +1,4 @@
-Dc::Application.routes.draw do
+GamePlatform::Application.routes.draw do
   match '/' => 'dc#lobby', :as => :lobby
   match '/:game_name/:game_id' => "dc#game", :as => :game
 
