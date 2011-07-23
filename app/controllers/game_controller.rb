@@ -14,14 +14,15 @@ class GameController < ApplicationController
     # We'll hopefully get a JSON list of player names
     targets = [@player] + (params['targets'].split(',').map{ |x| Player.find_by_name(x) }.reject{|x| !x})
     
+    puts "Params: #{params.inspect}"
     if targets.size > 1
       game = Game.create(:game_type => 'tic_tac_toe', :players => targets)
       #TODO - this needs to be able to make different types of games.
       st = game.states.create(:data => YAML.dump(TicTacToe.new(targets.map{|x| x.name})), :turn_id => 1);
       game.save
-      return render :json => true
+      return render :json => {'success' => true, 'game_id' => game.id}
     else
-      return render :json => false
+      return render :json => {'success' => false}
     end
   end
 

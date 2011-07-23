@@ -1,0 +1,7 @@
+- content_for :head do
+  = javascript_include_tag '/javascripts/lobby.js'
+%input#challenge{:type => 'text', :name => 'challenge'} 
+  challenge
+%input#join_game_button{:type => 'button', :value => 'Join Game'}
+#game_response
+  

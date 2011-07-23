@@ -12,7 +12,7 @@ class PlayerController < ApplicationController
     Player.create_player(params[:name],params[:email], params[:password])
     session[:player_id] = Player.authenticate(params[:name],params[:password]).id rescue nil
     flash_success "registered successfully"
-    redirect_to :controller => :dc, :action => :lobby
+    redirect_to lobby_path
   end
 
   def login
@@ -20,7 +20,7 @@ class PlayerController < ApplicationController
       if session[:player_id] = Player.authenticate(params[:name],params[:password]).id rescue nil
         puts "Session contains #{session.inspect}"
         flash_success "Successfully logged in"
-        redirect_to :controller => 'dc', :action => 'lobby'
+        redirect_to lobby_path
       else
         flash_error "Wrong username/pass"
         redirect_to :back

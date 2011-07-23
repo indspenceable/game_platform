@@ -3,6 +3,7 @@ class CreatePlayers < ActiveRecord::Migration
     create_table :players do |t|
       t.string :name
       t.integer :game_id
+      t.column :last_activity, :datetime
       t.timestamps
     end
   end

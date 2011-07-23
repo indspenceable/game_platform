@@ -1,20 +1,15 @@
 function update() {
   $.get("/poll_lobby",function(response) {
-    if (response['in_game'] == true) {
-      window.location = '/game/'
-    } else {
-      //for (var i = 0; i < response['players'].length; i++) {
-        //TODO make this part work.
-      //}
-    }
   });
 }
+
+
 $(document).ready(function() {
-  //$("#set_name_input").val("<%= session[:name] %>");
-  $("#join_game_button").click( function() {
+  $("#join_game_button").click(function() {
     $.post('game/new',{'targets':$("#challenge").val()},function(data) {
-      if (data) {
-        window.location = '/game/' 
+      if (data['success']) {
+        console.log("Data is " + data['game_id'])
+        window.location = '/game/' +data['game_id']
       } else {
         $("#game_response").text("Unable to create a game.");
       }

@@ -1,0 +1,4 @@
+- content_for :head do
+  = javascript_include_tag '/javascripts/tic_tac_toe_game.js'
+%canvas#canvas{:width => "300", :height => "300"}
+%input#quit{:type => "button", :value => "Quit game"}

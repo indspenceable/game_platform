@@ -6,16 +6,16 @@ class ApplicationController < ActionController::Base
   private
 
   def require_login
-    unless logged_in?
+    unless @player = logged_in?
       flash[:error] = "log in to access this page"
       redirect_to :controller => :player, :action => :login
     else
-      @player = Player.find(session[:player_id])
+      @player.update_attribute(:last_activity, Time.now)
     end
   end
 
   def logged_in?
-    !!session[:player_id]
+    Player.find(session[:player_id]) rescue false
   end
 
   def flash_success(message)
