@@ -1,12 +1,14 @@
 Dc::Application.routes.draw do
-  match '/' => 'dc#lobby'
+  match '/' => 'dc#lobby', :as => :lobby
+  match '/:game_name/:game_id' => "dc#game", :as => :game
+
   match '/login' => 'player#login'
   match '/register' => 'player#create_player'
 
-  ['name','challenge','accept','submit','quit'].each do |m|
-    match "/#{m}" => "dc##{m}", :via => :post
-  end
-  ['poll_lobby','game','state','transitions'].each do |m|
+  match '/submit' => "dc#submit", :via => :post
+  match '/quit' => "dc#quit", :via => :post
+
+  ['poll_lobby','state','transitions'].each do |m|
     match "/#{m}" => "dc##{m}"
   end
 

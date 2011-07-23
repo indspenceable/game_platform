@@ -3,31 +3,7 @@ class DcController < ApplicationController
 
   before_filter :require_login
 
-  #get any new chats
   def lobby
-    #@player_id = session[:player_id]
-    render :game if @player.game
-  end
-
-  # Deprecated.
-  #change this players name - via POST
-  def name_deprecated
-    return render :json => false.to_json unless Player.valid_name?(params['name'])
-    new_name = params['name']
-    if !!Player.find_by_name(new_name)
-      return render :json => false.to_json
-    else
-      if session[:name]
-        p = Player.find_by_name(session[:name])
-        p.name = new_name
-        p.save
-      else
-        p = Player.new(:name => new_name)
-        p.save
-      end
-      session[:name] = new_name
-      render :json => true.to_json
-    end
   end
 
   def quit
@@ -35,7 +11,7 @@ class DcController < ApplicationController
   end
   
   def new_game
-    #return render :json => false.to_json  unless (session[:name] && (p = Player.find_by_name(session[:name])))
+    # We'll hopefully get a JSON list of player names
     targets = [@player] + (params['targets'].split(',').map{ |x| Player.find_by_name(x) }.reject{|x| !x})
     
     if targets.size > 1
@@ -49,29 +25,16 @@ class DcController < ApplicationController
     end
   end
 
+  # params -> game_id
   def game
-    #@game = YAML.load(Game.find_newest_state(Player.find_by_name(session[:name]).game_id).state)
-    return redirect_to '/' unless @player.game
-    #OK - we have a game
+    @game = Game.find(params[:game_id])
+    redirect_to lobby_path unless @game
   end
 
-
-  def poll_lobby
-    #p = Player.find_by_name(session[:name])
-    return render :json => {'in_game' => true} if @player.game
-    render :json => {}
-  end
-
-  #challenge a player, or cancel a challenge
-  def challenge
-  end
-
-  #accept a challenge
-  def accept
-  end
 
   # get the state of a game right now
   def state
+    # Params -> :game, :game_id
     #player = Player.find_by_name(session[:name])
     state = YAML.load(@player.game.current_state.data)
     puts "State is a #{state.class} #{state.inspect}"
@@ -94,6 +57,24 @@ class DcController < ApplicationController
     render :text => "Hello, world."
   end
 
+
+  #this is the general polling method
+  def poll
+    if params['type'] == 'transitions'
+      transitions
+    else
+      poll_lobby
+    end
+  end
+
+  #TODO - will eventually render a list of the players, and chat.
+  # via => get
+  # params -> date?
+  # also, a list of your games?
+  def poll_lobby
+    render :json => {}
+    #the logic here should be split into sub tasks
+  end
 
   #get any changes from other people's turns
   def transitions
