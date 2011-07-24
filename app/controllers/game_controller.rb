@@ -1,15 +1,7 @@
 require 'tic_tac_toe.rb'
 class GameController < ApplicationController
-
   before_filter :require_login
 
-  def lobby
-  end
-
-  def quit
-    @player.game.destroy
-  end
-  
   def new_game
     # We'll hopefully get a JSON list of player names
     targets = [@player] + (params['targets'].split(' ').map{ |x| Player.find_by_name(x) }.reject{|x| !x})
@@ -27,7 +19,7 @@ class GameController < ApplicationController
   end
 
   # params -> game_id
-  def game
+  def play
     game = Game.find(params['game_id'])
   rescue
     flash[:error] = 'No game found!'
@@ -60,17 +52,6 @@ class GameController < ApplicationController
     else
       render :json => false
     end
-  end
-
-  #TODO - will eventually render a list of the players, and chat.
-  # via => get
-  # params -> date?
-  # also, a list of your games?
-  def poll_lobby
-    render :json => {
-    'players' => Player.where("last_activity > ?", 30.seconds.ago).map{|p| p.name},
-    'game' => @player.game ? game_path(:game_name => @player.game.game_type, :game_id => @player.game.id) : "#"
-    }
   end
 
   #get any changes from other people's turns
