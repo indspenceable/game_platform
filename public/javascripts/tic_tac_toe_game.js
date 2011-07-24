@@ -72,7 +72,7 @@ function canvasClickEvent(e) {
 }
 
 
-function processTransitions(d) {
+function processDelta(d) {
   if (d.type == 'play_square') {
     board[d.x][d.y] = d.player
     current_player = d.next_player

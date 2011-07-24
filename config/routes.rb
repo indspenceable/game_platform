@@ -5,7 +5,7 @@ GamePlatform::Application.routes.draw do
   match '/game/new' => 'game#new_game', :via => :post, :as => :create
   match '/:game_name/:game_id' => 'game#play', :as => :play
   match '/state' => 'game#state', :as => :state
-  match '/transitions' => 'game#transitions', :as => :transition
+  match '/deltas' => 'game#deltas', :as => :deltas
 
   match '/login' => 'player#login'
   match '/register' => 'player#create_player'

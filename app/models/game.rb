@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
   has_many :states
-  has_many :transitions
+  has_many :deltas
   has_many :players
   validates_presence_of :game_type
 

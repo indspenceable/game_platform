@@ -43,7 +43,7 @@ class GameController < ApplicationController
     res = loaded_state.submit @player.name, params
     if res
       #t = Transition.new({:game_id => @game.game_id, :turn_id => (@game.move_id), :data => res.to_json})
-      game.transitions.create(:turn_id => state.turn_id, :data => res.to_json)
+      game.deltas.create(:turn_id => state.turn_id, :data => res.to_json)
       new_state = game.states.create(:turn_id => state.turn_id + 1, :data => loaded_state)
       if loaded_state.finished?
         game.update_attribute(:completed, true)
@@ -56,7 +56,7 @@ class GameController < ApplicationController
 
   #get any changes from other people's turns
   # params => current_turn
-  def transitions
+  def deltas 
     #    game = #@player.game
     puts "params: #{params['game_id']}"
     game = Game.find(params['game_id'].to_i) rescue nil
@@ -65,13 +65,13 @@ class GameController < ApplicationController
     #newest_turn = Game.find_newest_state(game_id);
     current_state = game.current_state
     ctn = params['current_turn'].to_i
-    transitions = []
+    deltas = []
     while ctn < current_state.turn_id
       #transition = Transition.find(:first, :conditions => {:game_id => game_id, :turn_id => ctn})
-      td = game.transitions.find(:first, :conditions => {:turn_id => ctn}).data
-      transitions << JSON.parse(td)
+      td = game.deltas.find(:first, :conditions => {:turn_id => ctn}).data
+      deltas << JSON.parse(td)
       ctn += 1
     end
-    render :json => {'game_over' => game.completed, 'transitions' => transitions}
+    render :json => {'game_over' => game.completed, 'deltas' => deltas}
   end
 end

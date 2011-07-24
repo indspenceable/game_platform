@@ -2,15 +2,15 @@ var game_id;
 
 function update() {
   var context = document.getElementById("canvas").getContext("2d");
-  console.log("Getting Transitions.", current_turn, game_id);
-  $.get("/transitions",{'game_id':game_id,'current_turn':current_turn},function(response) {
+  console.log("Getting Deltas.", current_turn, game_id);
+  $.get("/deltas",{'game_id':game_id,'current_turn':current_turn},function(response) {
     if (response['game_over'] == true) {
       $("#nav").html('<a href="/">Go home</a>');
     } 
-    if (response.transitions.length > 0) {
-      for (var i = 0; i < response.transitions.length; i++ ) {
-        //Plugin with the processTransitions method
-        processTransitions(response.Transitions[i]);
+    if (response.deltas.length > 0) {
+      for (var i = 0; i < response.deltas.length; i++ ) {
+        //Plugin with the processDeltas method
+        processDelta(response.deltas[i]);
       }
       // Plugin with the drawGame() method
       drawGame(context);

@@ -1,6 +1,6 @@
-class CreateTransitions < ActiveRecord::Migration
+class CreateDeltas < ActiveRecord::Migration
   def self.up
-    create_table :transitions do |t|
+    create_table :deltas do |t|
       t.integer :game_id
       t.integer :turn_id
       t.text :data
@@ -10,6 +10,6 @@ class CreateTransitions < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :transitions
+    drop_table :deltas
   end
 end
