@@ -4,6 +4,7 @@ var current_player;
 var current_turn;
 var player_name;
 var board;
+var game_id;
 
 function myTurn() {
   console.log(player_name,current_player);
@@ -73,15 +74,20 @@ function canvasClickEvent(e) {
 }
 
 function update() {
-  console.log("Getting Transitions.", current_turn);
-  $.get("/transitions",{'current_turn':current_turn},function(response) {
-    if (response['game_over'] == true) {
-      window.location = '/';
-    } else if (response.transitions.length > 0) {
-      for (var i = 0; i < response.transitions.length; i++ ) {
-        processTransition(response.transitions[i]);
+  console.log("Getting Transitions.", current_turn, game_id);
+  $.get("/transitions",{'game_id':game_id,'current_turn':current_turn},function(response) {
+    if (response['no_game'] == true) {
+      //window.location = '/';
+    } else {
+      if (response['game_over'] == true) {
+        $("#nav").html('<a href="/">Go home</a>');
+      } 
+      if (response.transitions.length > 0) {
+        for (var i = 0; i < response.transitions.length; i++ ) {
+          processTransition(response.transitions[i]);
+        }
+        drawBoard();
       }
-      drawBoard();
     }
   });
   drawBoard();
@@ -104,6 +110,7 @@ function load_state_json(data) {
   current_turn = data['current_turn'];
   board = data['board'];
   console.log("loaded a new state.");
+  console.log(board)
   console.log(data);
 }
 
@@ -117,7 +124,8 @@ $(document).ready(function() {
     $.post("/quit")
   })
   $.get('/state',function(data) {
-    load_state_json(data);
+    game_id = data['game_id'];
+    load_state_json(data['state']);
     $('#canvas').click(function(e) {
       canvasClickEvent(e);
     });

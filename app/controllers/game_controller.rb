@@ -12,7 +12,7 @@ class GameController < ApplicationController
   
   def new_game
     # We'll hopefully get a JSON list of player names
-    targets = [@player] + (params['targets'].split(',').map{ |x| Player.find_by_name(x) }.reject{|x| !x})
+    targets = [@player] + (params['targets'].split(' ').map{ |x| Player.find_by_name(x) }.reject{|x| !x})
     
     puts "Params: #{params.inspect}"
     if targets.size > 1
@@ -28,18 +28,15 @@ class GameController < ApplicationController
 
   # params -> game_id
   def game
-    @game = Game.find(params[:game_id])
+    @game = @player.game
     redirect_to lobby_path unless @game
   end
-
 
   # get the state of a game right now
   def state
     # Params -> :game, :game_id
-    #player = Player.find_by_name(session[:name])
     state = YAML.load(@player.game.current_state.data)
-    puts "State is a #{state.class} #{state.inspect}"
-    render :json => (state.state_json(@player.name))
+    render :json => {'game_id' =>@player.game.id, 'state' => state.state_hash(@player.name)}
   end
 
   #submit some data.
@@ -53,18 +50,13 @@ class GameController < ApplicationController
     if res
       #t = Transition.new({:game_id => @game.game_id, :turn_id => (@game.move_id), :data => res.to_json})
       game.transitions.create(:turn_id => state.turn_id, :data => res.to_json)
-      game.states.create(:turn_id => state.turn_id + 1, :data => loaded_state)
-    end
-    render :text => "Hello, world."
-  end
-
-
-  #this is the general polling method
-  def poll
-    if params['type'] == 'transitions'
-      transitions
+      new_state = game.states.create(:turn_id => state.turn_id + 1, :data => loaded_state)
+      if loaded_state.finished?
+        game.update_attribute(:completed, true)
+      end
+      render :json => true
     else
-      poll_lobby
+      render :json => false
     end
   end
 
@@ -73,17 +65,20 @@ class GameController < ApplicationController
   # params -> date?
   # also, a list of your games?
   def poll_lobby
-    render :json => {}
-    #the logic here should be split into sub tasks
+    render :json => {
+    'players' => Player.where("last_activity > ?", 30.seconds.ago).map{|p| p.name},
+    'game' => @player.game ? game_path(:game_name => @player.game.game_type, :game_id => @player.game.id) : "#"
+    }
   end
 
   #get any changes from other people's turns
+  # params => current_turn
   def transitions
-    #TODO - this doesn't work.
-    #game_id = Player.find_by_name(session[:name]).game_id
-    #player = Player.find_by_name(session[:name])
-    game = @player.game
-    return render :json => {'game_over' => true} unless game
+#    game = #@player.game
+    puts "params: #{params['game_id']}"
+    game = Game.find(params['game_id'].to_i) rescue nil
+    puts "Game is #{game.inspect}"
+    return render :json => {'no_game' => true} unless game
     #newest_turn = Game.find_newest_state(game_id);
     current_state = game.current_state
     ctn = params['current_turn'].to_i
@@ -94,6 +89,6 @@ class GameController < ApplicationController
       transitions << JSON.parse(td)
       ctn += 1
     end
-    render :json => {'game_over' => false, 'transitions' => transitions}
+    render :json => {'game_over' => game.completed, 'transitions' => transitions}
   end
 end

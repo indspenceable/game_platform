@@ -1,5 +1,8 @@
 class TicTacToe
   attr_accessor :board, :players, :current_turn
+  #API - initialize, with player list.
+  #or, will this be game specific?#
+  #whatever.
   def initialize players
     @board = Array.new(3) do
       Array.new(3) do
@@ -9,15 +12,8 @@ class TicTacToe
     @current_turn = 1
     @players = players
   end
-  def current_player
-    @players[@current_turn % @players.size]
-  end
-  def valid_move? player, move_json
-    if move_json['type'] == 'play'
-      x,y = move_json['loc']
-      @board[x.to_i][y.to_i] == nil
-    end
-  end
+
+  #API -> :player is submitting :move
   def submit player, move
     if move['type'] == 'play'
       x,y = move['loc']
@@ -29,8 +25,28 @@ class TicTacToe
       nil;
     end
   end
-  def state_json player
-    {'name' => player, 'current_player' => current_player, 'current_turn' => current_turn, 'board' => @board }.to_json
+
+  #API - return current state from perspective of :player
+  def state_hash player
+    {'name' => player, 'current_player' => current_player, 'current_turn' => current_turn, 'board' => @board }
+  end
+
+  def finished?
+    rtn = nil
+    3.times do |i|
+        rtn ||= @board[0][i] if @board[0][i] == @board[1][i] && @board[1][i] == @board[2][i]
+        rtn ||= @board[i][0] if @board[i][0] == @board[i][1] && @board[i][1] == @board[i][2]
+    end
+    rtn ||= @board[0][0] if @board[0][0] == @board[1][1] && @board[1][1] == @board[2][2]
+    rtn ||= @board[2][0] if @board[2][0] == @board[1][1] && @board[1][1] == @board[0][2]
+    puts "RTN is #{rtn}"
+    return rtn
+  end
+
+  private
+
+  def current_player
+    @players[@current_turn % @players.size]
   end
 end
 

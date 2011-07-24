@@ -2,6 +2,7 @@ class CreateGames < ActiveRecord::Migration
   def self.up
     create_table :games do |t|
       t.string :game_type
+      t.boolean :completed
 
       t.timestamps
     end
