@@ -8,14 +8,10 @@ function update() {
         new_player_list += ('<br/>' + response['players'][i]);
       }
       $("#players:first").html(new_player_list);
-      if (response['game'] != "") {
-        $("#games").html('<a href="'+response['game']+'">Your current game.</a>')
-      }
     }
   });
 }
 var players;
-
 
 $(document).ready(function() {
   //Join Game button

@@ -6,6 +6,7 @@
   challenge
 %input#join_game_button{:type => 'button', :value => 'Join Game'}
 #game_response
+-if @player.game
+  =link_to "Back to game", play_path(:game_name => @player.game.game_type, :game_id => @player.game.id)
 #players
-#games
   
