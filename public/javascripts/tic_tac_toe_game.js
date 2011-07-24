@@ -4,15 +4,13 @@ var current_player;
 var current_turn;
 var player_name;
 var board;
-var game_id;
 
 function myTurn() {
   console.log(player_name,current_player);
   return (player_name == current_player);
 }
 
-function drawBoard() {
-  var context = document.getElementById("canvas").getContext("2d");
+function drawGame(context) {
   for (var i = 0; i < board.length; i++ ) {
     for (var j = 0; j < board[i].length; j++ ) {
       if (board[i][j] != null) {
@@ -73,60 +71,19 @@ function canvasClickEvent(e) {
   }
 }
 
-function update() {
-  console.log("Getting Transitions.", current_turn, game_id);
-  $.get("/transitions",{'game_id':game_id,'current_turn':current_turn},function(response) {
-    if (response['game_over'] == true) {
-      $("#nav").html('<a href="/">Go home</a>');
-    } 
-    if (response.transitions.length > 0) {
-      for (var i = 0; i < response.transitions.length; i++ ) {
-        processTransition(response.transitions[i]);
-      }
-      drawBoard();
-    }
-  });
-  drawBoard();
-}
 
-function processTransition(t) {
-  if (t.type == 'play_square') {
-    board[t.x][t.y] = t.player
-    current_player = t.next_player
-    current_turn = t.next_turn
-  } else if (t.type == 'game_over') {
-    alert("The game is over.");
-  }
+function processTransitions(d) {
+  if (d.type == 'play_square') {
+    board[d.x][d.y] = d.player
+    current_player = d.next_player
+    current_turn = d.next_turn
+  } 
 }
 
 function load_state_json(data) {
-  console.log("loading state data.",data);
   player_name = data['name'];
   current_player = data['current_player'];
   current_turn = data['current_turn'];
   board = data['board'];
-  console.log("loaded a new state.");
-  console.log(board)
-  console.log(data);
 }
-
-$(document).ajaxSend(function(e, xhr, options) {
-  var token = $("meta[name='csrf-token']").attr("content");
-  xhr.setRequestHeader("X-CSRF-Token", token);
-});
-
-$(document).ready(function() {
-  $("#quit").click(function(e) {
-    $.post("/quit")
-  })
-  $.get('/state',function(data) {
-    game_id = data['game_id'];
-    load_state_json(data['state']);
-    $('#canvas').click(function(e) {
-      canvasClickEvent(e);
-    });
-    setInterval("update();",3000);
-    update();
-  });
-});
 

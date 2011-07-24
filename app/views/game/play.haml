@@ -1,4 +1,5 @@
 - content_for :head do
+  = javascript_include_tag '/javascripts/game.js'
   = javascript_include_tag '/javascripts/tic_tac_toe_game.js'
 #nav
 %canvas#canvas{:width => "300", :height => "300"}
