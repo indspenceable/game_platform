@@ -76,18 +76,14 @@ function canvasClickEvent(e) {
 function update() {
   console.log("Getting Transitions.", current_turn, game_id);
   $.get("/transitions",{'game_id':game_id,'current_turn':current_turn},function(response) {
-    if (response['no_game'] == true) {
-      //window.location = '/';
-    } else {
-      if (response['game_over'] == true) {
-        $("#nav").html('<a href="/">Go home</a>');
-      } 
-      if (response.transitions.length > 0) {
-        for (var i = 0; i < response.transitions.length; i++ ) {
-          processTransition(response.transitions[i]);
-        }
-        drawBoard();
+    if (response['game_over'] == true) {
+      $("#nav").html('<a href="/">Go home</a>');
+    } 
+    if (response.transitions.length > 0) {
+      for (var i = 0; i < response.transitions.length; i++ ) {
+        processTransition(response.transitions[i]);
       }
+      drawBoard();
     }
   });
   drawBoard();

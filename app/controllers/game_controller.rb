@@ -28,8 +28,10 @@ class GameController < ApplicationController
 
   # params -> game_id
   def game
-    @game = @player.game
-    redirect_to lobby_path unless @game
+    game = Game.find(params['game_id'])
+  rescue
+    flash[:error] = 'No game found!'
+    redirect_to lobby_path 
   end
 
   # get the state of a game right now
@@ -74,7 +76,7 @@ class GameController < ApplicationController
   #get any changes from other people's turns
   # params => current_turn
   def transitions
-#    game = #@player.game
+    #    game = #@player.game
     puts "params: #{params['game_id']}"
     game = Game.find(params['game_id'].to_i) rescue nil
     puts "Game is #{game.inspect}"

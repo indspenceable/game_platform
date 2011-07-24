@@ -1,5 +1,7 @@
 - content_for :head do
   = javascript_include_tag '/javascripts/lobby.js'
+- if flash[:error]
+  #error= flash[:error]
 %input#challenge{:type => 'text', :name => 'challenge'} 
   challenge
 %input#join_game_button{:type => 'button', :value => 'Join Game'}

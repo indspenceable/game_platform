@@ -7,7 +7,7 @@ function update() {
       for (var i =0; i < response['players'].length; i++) {
         new_player_list += ('<br/>' + response['players'][i]);
       }
-      $("#players:first").text(new_player_list);
+      $("#players:first").html(new_player_list);
       if (response['game'] != "") {
         $("#games").html('<a href="'+response['game']+'">Your current game.</a>')
       }
