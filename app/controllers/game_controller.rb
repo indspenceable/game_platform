@@ -3,10 +3,8 @@ class GameController < ApplicationController
   before_filter :require_login
 
   def new_game
-    # We'll hopefully get a JSON list of player names
+    #TODO We'll hopefully get a JSON list of player names
     targets = [@player] + (params['targets'].split(' ').map{ |x| Player.find_by_name(x) }.reject{|x| !x})
-    
-    puts "Params: #{params.inspect}"
     if targets.size > 1
       game = Game.create(:game_type => 'tic_tac_toe', :players => targets)
       #TODO - this needs to be able to make different types of games.
@@ -35,13 +33,10 @@ class GameController < ApplicationController
 
   #submit some data.
   def submit
-    #@game = Game.find_newest_state(Player.find_by_name(session[:name]).game_id)
-    #player = Player.find_by_name(session[:name])
     game = @player.game
     state = game.current_state
     loaded_state = YAML.load(state.data)
-    res = loaded_state.submit @player.name, params
-    if res
+    if (!loaded_state.finished?) && (res = loaded_state.submit @player.name, params)
       #t = Transition.new({:game_id => @game.game_id, :turn_id => (@game.move_id), :data => res.to_json})
       game.deltas.create(:turn_id => state.turn_id, :data => res.to_json)
       new_state = game.states.create(:turn_id => state.turn_id + 1, :data => loaded_state)
