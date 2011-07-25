@@ -1,16 +1,19 @@
 GamePlatform::Application.routes.draw do
   match '/' => 'lobby#lobby', :as => :lobby
   match '/poll_lobby' => 'lobby#poll', :as => :poll_lobby
+  match '/challenge' => 'lobby#issue_challenge', :as => :issue_challenge
+  match '/accept' => 'lobby#accept_challenge', :as => :accept_challenge
 
+  #game
   match '/game/new' => 'game#new_game', :via => :post, :as => :create
-  match '/:game_name/:game_id' => 'game#play', :as => :play
+  match '/:game_type/:game_id' => 'game#play', :as => :play
   match '/state' => 'game#state', :as => :state
   match '/deltas' => 'game#deltas', :as => :deltas
+  match '/submit' => "game#submit", :via => :post
 
   match '/login' => 'player#login'
   match '/register' => 'player#create_player'
 
-  match '/submit' => "game#submit", :via => :post
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

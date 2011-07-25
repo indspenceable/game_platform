@@ -27,5 +27,4 @@ class PlayerController < ApplicationController
       end
     end
   end
-
 end
