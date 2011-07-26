@@ -41,8 +41,9 @@ class GameController < ApplicationController
       #t = Transition.new({:game_id => @game.game_id, :turn_id => (@game.move_id), :data => res.to_json})
       game.deltas.create(:turn_id => state.turn_id, :data => res.to_json)
       new_state = game.states.create(:turn_id => state.turn_id + 1, :data => loaded_state)
-      if loaded_state.finished?
-        game.update_attribute(:completed, true)
+
+      if winner = loaded_state.finished?
+        game.update_attribute(:winner, winner)
       end
       render :json => true
     else
@@ -68,6 +69,6 @@ class GameController < ApplicationController
       deltas << JSON.parse(td)
       ctn += 1
     end
-    render :json => {'game_over' => game.completed, 'deltas' => deltas}
+    render :json => {'game_over' => game.winner, 'deltas' => deltas}
   end
 end

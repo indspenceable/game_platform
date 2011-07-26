@@ -55,7 +55,7 @@ function update() {
   obj = {players:players, challenges:challenges}
   $.get("/poll_lobby",obj,function(response) {
     if (response['redirect'] != '') {
-        window.location = '/'
+        window.location = response['redirect']
     }
 
     for (var i =0; i < response['add_player'].length; i++) {

@@ -2,7 +2,7 @@ require 'tic_tac_toe.rb'
 class LobbyController < ApplicationController
   before_filter :require_login
   def lobby
-    if @player.game.completed
+    if @player.game.winner
       @player.game = nil
       @player.save
     end rescue nil
@@ -10,21 +10,20 @@ class LobbyController < ApplicationController
 
   #params -> players, challenges
   def poll
-    @player.update_attribute(:game_id, nil) if @player.game.completed rescue nil
+    @player.update_attribute(:game_id, nil) if @player.game.winner rescue nil
 
     player_list = Player.where("last_activity > ?", 30.seconds.ago).map{|p| p.name}.reject{|p| p == @player.name}
     ppm = params['players'] || []
 
     challenge_list = Player.where(:current_challenge => @player.name).map{|p| p.name}
     ccm = params['challenges'] || []
-    
 
     render :json => {
     'add_player' => player_list - ppm,
     'remove_player' => ppm - player_list,
     'challenge' => challenge_list - ccm,
     'unchallenge' => ccm - challenge_list,
-    'redirect' => @player.one_time_redirect ? "#{play_path(:game_id => @player.game_id)}" : ''
+    'redirect' => @player.one_time_redirect ? "#{play_path(:game_id => @player.game_id, :game_type => 'tic_tac_toe')}" : ''
     }
     @player.update_attribute(:one_time_redirect, false)
   end

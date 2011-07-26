@@ -39,7 +39,17 @@ class TicTacToe
     end
     rtn ||= @board[0][0] if @board[0][0] == @board[1][1] && @board[1][1] == @board[2][2]
     rtn ||= @board[2][0] if @board[2][0] == @board[1][1] && @board[1][1] == @board[0][2]
-    puts "RTN is #{rtn}"
+
+    unless rtn
+      total = 0
+      3.times do |x|
+        3.times do |y|
+          total += 1 if @board[x][y]
+        end
+      end
+      rtn = "tie" if total == 9
+    end
+
     return rtn
   end
 

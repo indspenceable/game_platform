@@ -4,7 +4,7 @@ function update() {
   var context = document.getElementById("canvas").getContext("2d");
   console.log("Getting Deltas.", current_turn, game_id);
   $.get("/deltas",{'game_id':game_id,'current_turn':current_turn},function(response) {
-    if (response['game_over'] == true) {
+    if (response['game_over'] != null) {
       $("#nav").html('<a href="/">Go home</a>');
     } 
     if (response.deltas.length > 0) {
