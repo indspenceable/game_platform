@@ -19,7 +19,7 @@ class GameController < ApplicationController
 
   # params -> game_id
   def play
-    game = Game.find(params['game_id'])
+    @game = Game.find(params['game_id'])
   rescue
     flash[:error] = 'No game found!'
     redirect_to lobby_path 
@@ -27,12 +27,11 @@ class GameController < ApplicationController
 
   # get the state of a game right now
   def state
-    # Params -> :game, :game_id
     #state = YAML.load(@player.game.current_state.data)
     #render :json => {'game_id' =>@player.game.id, 'state' => state.state_hash(@player.name)}
     game = Game.find(params['game_id'])
     state = YAML.load(game.current_state.data)
-    render :json => {'game_id' => game.id, 'state' => stae.state_hash(@player.name)}
+    render :json => {'game_id' => game.id, 'state' => state.state_hash(@player.name)}
   end
 
   #submit some data.

@@ -29,8 +29,8 @@ $(document).ready(function() {
   $("#quit").click(function(e) {
     $.post("/quit")
   })
-  $.get('/state',function(data) {
-    game_id = data['game_id'];
+  $.get('/state',{'game_id':game_id}, function(data) {
+    //game_id = data['game_id'];
     // Plugin with the "load_state_json" method
     load_state_json(data['state']);
     $('#canvas').click(function(e) {
