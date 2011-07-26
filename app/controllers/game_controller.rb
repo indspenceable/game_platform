@@ -28,8 +28,11 @@ class GameController < ApplicationController
   # get the state of a game right now
   def state
     # Params -> :game, :game_id
-    state = YAML.load(@player.game.current_state.data)
-    render :json => {'game_id' =>@player.game.id, 'state' => state.state_hash(@player.name)}
+    #state = YAML.load(@player.game.current_state.data)
+    #render :json => {'game_id' =>@player.game.id, 'state' => state.state_hash(@player.name)}
+    game = Game.find(params['game_id'])
+    state = YAML.load(game.current_state.data)
+    render :json => {'game_id' => game.id, 'state' => stae.state_hash(@player.name)}
   end
 
   #submit some data.
