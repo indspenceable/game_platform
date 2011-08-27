@@ -5,7 +5,6 @@ class Game < ActiveRecord::Base
   validates_presence_of :game_type
 
   def current_state
-    states.find(:first,:order => "turn_id DESC")
+    states.order("turnd_id DESC").first
   end
-
 end
