@@ -50,8 +50,9 @@ class GameController < ApplicationController
   #game_id -> @player.game.id
   def submit
     return json_error "Player name doesn't match logged in player." unless @player.name == params['player']
-    game = @player.game
-    return json_error "Game doesn't match current game." unless game.id == params['game_id'].to_i
+
+    game = Game.find(params['game_id']) rescue nil
+    return json_error "You aren't in that game." unless @player.games.include?(game)
     state = game.current_state
     return json_error "State doesn't match current_state" unless state.turn_id == params['turn_id'].to_i
     loaded_state = state.data
@@ -88,6 +89,6 @@ class GameController < ApplicationController
     delta=game.deltas.find(:first,:conditions => {:turn_id => turn_id}).data rescue nil
 
     return json_error "No delta for that state." unless delta
-    render :json => {'success' => true, 'delta' => delta}
+    render :json => {'success' => true, 'turn_id' => turn_id, 'delta' => delta}
   end
 end

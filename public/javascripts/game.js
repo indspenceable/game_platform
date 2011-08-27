@@ -6,10 +6,15 @@ var player_name;
 function attemptToAdvanceState() {
   var context = document.getElementById("canvas").getContext("2d");
   $.get("/deltas",{'game_id':game_id,'turn_id':current_turn,'player':player_name},function(response) {
+    console.log("Hello?",response);
     if (response.success == true) {
-      processDelta(response.delta);
-      //current_turn response.meta;
-      drawGame(context);
+      if (current_turn == parseInt(response.turn_id)) {
+        console.log("PROCESSING DELTA.")
+        processDelta(response.delta);
+        current_turn+=1;
+        console.log("Now at ",current_turn);
+        drawGame(context);
+      }
     }
   });
 }

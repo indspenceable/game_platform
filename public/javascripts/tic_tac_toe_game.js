@@ -70,6 +70,7 @@ function processDelta(d) {
   if (d.type == 'play_square') {
     board[parseInt(d.x)][parseInt(d.y)] = d.player
     current_player = d.next_player
+    console.log("next player is ",current_player);
   } 
 }
 

@@ -31,3 +31,5 @@ gem 'sass'
 # group :development, :test do
 #   gem 'webrat'
 # end
+
+gem 'hirb'

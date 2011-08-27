@@ -27,6 +27,7 @@ class TicTacToe
       return false if (@board[x.to_i][y.to_i] != nil) || (player != current_player)
       @board[x.to_i][y.to_i] = player
       @current_turn+=1
+      puts "CURRENT PLAYER IS #{current_player}"
       {'type' => 'play_square', 'player' => player, 'x' => x, 'y' => y, 'next_player' => current_player, 'next_turn' => @current_turn }
     else
       nil;

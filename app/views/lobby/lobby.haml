@@ -5,11 +5,4 @@
 %input#challenge{:type => 'text', :name => 'challenge'} 
   challenge
 %input#join_game_button{:type => 'button', :value => 'Join Game'}
-#messages
-#game_response
--if @player.game
-  =link_to "Back to game", play_path(:game_type => @player.game.game_type, :game_id => @player.game.id)
-#player_list
-  %b=@player.name
-  #players
-  
+#games
