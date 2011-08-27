@@ -27,4 +27,8 @@ class ApplicationController < ActionController::Base
     flash[:message] = message
     flash[:notice_class] = FAILURE_NOTICE_CLASS
   end
+
+  def json_error message
+    render :json => {'success' => false, 'error' => message}
+  end
 end

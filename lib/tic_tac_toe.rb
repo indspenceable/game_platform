@@ -1,5 +1,12 @@
 class TicTacToe
   attr_accessor :board, :players, :current_turn
+
+  def self.game_type
+    'tic_tac_toe'
+  end
+
+
+
   #API - initialize, with player list.
   #or, will this be game specific?#
   #whatever.

@@ -1,7 +1,15 @@
 class Player < ActiveRecord::Base
+
+  has_many :outgoing_challenges, :foreign_key => :challenger, :class_name => "Challenge"
+  has_many :incoming_challenges, :foreign_key => :challengee, :class_name => "Challenge"
+
+  has_many :game_memberships
+  has_many :games, :through => :game_memberships
+
   belongs_to :game
   validates_presence_of :name
   validates_uniqueness_of :name
+  
 
   def self.valid_name? n
     !!(n=~/[a-z]{3,10}/)

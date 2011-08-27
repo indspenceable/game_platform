@@ -1,12 +1,10 @@
 var SQUARE_WIDTH = 100; var SQUARE_HEIGHT = 100;
 
 var current_player;
-var current_turn;
 var player_name;
 var board;
 
 function myTurn() {
-  console.log(player_name,current_player);
   return (player_name == current_player);
 }
 
@@ -61,29 +59,22 @@ function canvasClickEvent(e) {
     var x = loc[0]
     var y = loc[1]
     if (board[x][y] == null) {
-      $.post("/submit",{'type':'play','loc':loc}, function(response) {
-        console.log("submitted order, updating.");
-        update();
-      })
+      submitMove({'type':'play','loc':loc})
     } else {
       alert("You can't play a square that already exists.");
     }
   }
 }
 
-
 function processDelta(d) {
   if (d.type == 'play_square') {
-    board[d.x][d.y] = d.player
+    board[parseInt(d.x)][parseInt(d.y)] = d.player
     current_player = d.next_player
-    current_turn = d.next_turn
   } 
 }
 
-function load_state_json(data) {
-  player_name = data['name'];
+function loadState(data) {
   current_player = data['current_player'];
-  current_turn = data['current_turn'];
   board = data['board'];
 }
 
