@@ -1,4 +1,5 @@
 require 'tic_tac_toe.rb'
+require 'dungeon_clash.rb'
 class GameController < ApplicationController
   before_filter :require_login
 

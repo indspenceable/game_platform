@@ -1,7 +1,6 @@
 var SQUARE_WIDTH = 100; var SQUARE_HEIGHT = 100;
 
 var current_player;
-var player_name;
 var board;
 
 function myTurn() {

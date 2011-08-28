@@ -10,7 +10,7 @@ function update() {
 $(document).ready(function() {
   //Join Game button
   $("#join_game_button").click(function() {
-    $.post("/challenge",{targets:$("#challenge").val(),game_type:'TicTacToe'},function(response) {
+    $.post("/challenge",{targets:$("#challenge").val(),game_type:'DungeonClash'},function(response) {
       console.log("issued challenge.", response) 
     });
   });
