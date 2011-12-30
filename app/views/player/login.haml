@@ -1,6 +1,10 @@
-%form{ :action => "/login", :method => "post"}
-  %input{:type => 'text', :name => 'name'} name
-  %input{:type => 'password', :name => 'password'} password
+%form{ :method => "post"}
+  Name: 
+  %input{:type => 'text', :name => 'name'}
+  %br
+  Password: 
+  %input{:type => 'password', :name => 'password'}
+  %br
   %input{:type => 'submit', :value=> "Log in"}
 
 #register{}

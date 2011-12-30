@@ -16,12 +16,12 @@ class Player < ActiveRecord::Base
   end
   def self.create_player(name, email, password)
     return nil unless valid_name? name
-    player = Player.create!({:name => name, :email => email})
+    player = Player.create!({:name => name.downcase, :email => email})
     player.password = password
   end
 
   def self.authenticate(name, pass)
-    player = Player.find_by_name name
+    player = Player.find_by_name name.downcase
     return nil if player.nil?
     return player if player.hashed_password == Player.encrypt(pass, player.salt)
     nil
